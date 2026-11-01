@@ -36,7 +36,7 @@ a { color: inherit; text-decoration: none; }
   animation: shadow 6s ease-in-out infinite alternate; }
 @keyframes shadow { to { transform: translate(-50%, -50%) scale(.82); opacity: .7; } }
 
-#dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 8; }
+#dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; z-index: 7; pointer-events: none;
   background: linear-gradient(to top, rgba(30, 16, 24, .58), rgba(30, 16, 24, 0)); }
 
@@ -46,22 +46,28 @@ a { color: inherit; text-decoration: none; }
 .float { position: absolute; inset: 0; animation: bob 6s ease-in-out infinite alternate; }
 @keyframes bob { to { transform: translateY(-12px); } }
 
-.phone { position: absolute; left: 0; top: 0; z-index: 3; transform: translate(-50%, -50%); background: var(--phone);
-  box-shadow: 0 0 0 2.5px #8A8E95, 0 0 0 4px #3B3E44, inset 0 0 0 1.5px #2A2C31, 0 50px 70px -35px rgba(40, 20, 40, .55);
+/* --rim, --iw, --ih and --it are set from carousel.js so the hardware scales with the phone */
+.phone { position: absolute; left: 0; top: 0; z-index: 3; transform: translate(-50%, -50%); box-sizing: border-box;
+  border: var(--rim) solid transparent;
+  background: linear-gradient(var(--phone), var(--phone)) padding-box,
+    linear-gradient(135deg, #D5D6D8 0%, #84878D 22%, #B4B6BA 50%, #6F7278 78%, #BEC0C4 100%) border-box;
+  box-shadow: 0 0 0 .5px rgba(30, 30, 35, .55), 0 50px 70px -35px rgba(40, 20, 40, .55);
   transition: width .7s var(--ease-swap), height .7s var(--ease-swap), border-radius .7s; }
-.phone i { position: absolute; width: 3px; border-radius: 2px; background: linear-gradient(90deg, #5E6268, #9A9EA5); transition: opacity .3s; }
-.phone .b1 { left: -6px; top: 17%; height: 5%; }
-.phone .b2 { left: -6px; top: 26%; height: 9%; }
-.phone .b3 { left: -6px; top: 37%; height: 9%; }
-.phone .b4 { right: -6px; top: 28%; height: 14%; }
+.phone i { position: absolute; width: 2.5px; background: linear-gradient(90deg, #6F7278, #A5A7AC); transition: opacity .3s; }
+.phone .b1, .phone .b2, .phone .b3 { left: calc(-1 * var(--rim) - 2.5px); border-radius: 2px 0 0 2px; }
+.phone .b4 { right: calc(-1 * var(--rim) - 2.5px); border-radius: 0 2px 2px 0; transform: scaleX(-1); }
+.phone .b1 { top: 17%; height: 4%; }
+.phone .b2 { top: 25%; height: 8%; }
+.phone .b3 { top: 35%; height: 8%; }
+.phone .b4 { top: 28%; height: 13%; }
 .phone.landscape i { opacity: 0; }
 
 .bezel { position: absolute; left: 0; top: 0; z-index: 5; transform: translate(-50%, -50%); pointer-events: none;
   transition: width .7s var(--ease-swap), height .7s var(--ease-swap), border-radius .7s; }
-.island { position: absolute; left: 50%; top: 18px; width: 30%; max-width: 92px; height: 25px; transform: translateX(-50%);
-  background: #000; border-radius: 20px; transition: all .7s var(--ease-swap); }
-.landscape .island { left: 18px; top: 50%; width: 25px; height: 30%; max-height: 92px; transform: translateY(-50%); }
-.glare { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(118deg, rgba(255, 255, 255, .2) 0%, rgba(255, 255, 255, 0) 34%); }
+.island { position: absolute; left: 50%; top: var(--it); width: var(--iw); height: var(--ih); transform: translateX(-50%);
+  background: #000; border-radius: 999px; transition: all .7s var(--ease-swap); }
+.landscape .island { left: var(--it); top: 50%; width: var(--ih); height: var(--iw); transform: translateY(-50%); }
+.glare { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(118deg, rgba(255, 255, 255, .09) 0%, rgba(255, 255, 255, 0) 30%); }
 
 /* ---------- cards (clips) ---------- */
 .card { position: absolute; left: 0; top: 0; overflow: hidden; border-radius: 22px; background: #333; color: #fff;

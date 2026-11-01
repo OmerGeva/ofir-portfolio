@@ -56,7 +56,7 @@ export class Carousel {
 
   layout(g, cur) {
     const it = this.items[cur], isLong = it.format === 'long';
-    const B = Math.max(8, g.pw * 0.038); // bezel thickness
+    const B = Math.max(7, g.pw * 0.034); // bezel thickness, including the metal rim
     let phW = isLong ? g.ph : g.pw, phH = isLong ? g.pw : g.ph;
     if (isLong && phW > g.w * 0.9) { const k = g.w * 0.9 / phW; phW *= k; phH *= k; }
     const rad = Math.min(phW, phH) * 0.15;
@@ -64,6 +64,10 @@ export class Carousel {
     for (const el of [this.phone, this.bezel]) {
       el.style.width = phW + 'px'; el.style.height = phH + 'px'; el.style.borderRadius = rad + 'px';
       el.classList.toggle('landscape', isLong);
+      el.style.setProperty('--rim', Math.max(2, g.pw * 0.01) + 'px');
+      el.style.setProperty('--iw', g.pw * 0.26 + 'px');
+      el.style.setProperty('--ih', g.pw * 0.075 + 'px');
+      el.style.setProperty('--it', B + g.pw * 0.02 + 'px');
     }
     // keep the phone's bottom edge hovering just above the plinth
     this.tilt.style.left = g.plinthX + 'px';
@@ -80,7 +84,7 @@ export class Carousel {
       c.classList.toggle('landscape-card', long);
       if (d === 0) {
         c.classList.add('active');
-        st.width = scrW + 'px'; st.height = scrH + 'px'; st.borderRadius = (rad - B * 0.8) + 'px';
+        st.width = scrW + 'px'; st.height = scrH + 'px'; st.borderRadius = (rad - B) + 'px';
         st.transform = 'translate(-50%,-50%) translate(0px,0px) perspective(900px) rotateY(0deg) scale(1)';
         st.opacity = 1; st.zIndex = 4; st.filter = 'none';
         return;
