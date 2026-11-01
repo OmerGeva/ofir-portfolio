@@ -14,8 +14,8 @@ export class Carousel {
     this.onSelect = onSelect;
     this.onMeta = onMeta;
     this.cards = items.map(it => this.makeCard(it));
-    // Reveal a YouTube player only once it has played long enough for its controls to fade,
-    // and hide it again on pause or end, so none of YouTube's own UI ever shows.
+    // A YouTube player is ready to show once it has played long enough for its controls to fade.
+    // Neighbours pre-roll hidden, so swapping to one is instant and YouTube's UI never appears.
     window.addEventListener('message', e => {
       if (e.origin !== YT_ORIGIN) return;
       let state;
@@ -24,15 +24,15 @@ export class Carousel {
       const c = this.cards.find(c => c.querySelector('iframe')?.contentWindow === e.source);
       if (!c) return;
       if (state !== 1 && state !== 3) this.hideYouTube(c);
-      else if (!c.ytReveal && !c.classList.contains('yt-playing')) {
-        c.ytReveal = setTimeout(() => { c.classList.add('yt-playing'); c.ytReveal = null; }, YT_CONTROLS_MS);
+      else if (!c.ytReveal && !c.classList.contains('yt-ready')) {
+        c.ytReveal = setTimeout(() => { c.classList.add('yt-ready'); c.ytReveal = null; }, YT_CONTROLS_MS);
       }
     });
   }
 
   hideYouTube(c) {
     clearTimeout(c.ytReveal); c.ytReveal = null;
-    c.classList.remove('yt-playing');
+    c.classList.remove('yt-ready');
   }
 
   makeCard(it) {
@@ -53,7 +53,8 @@ export class Carousel {
       c.classList.add('has-video');
     } else if (it.youtube) {
       c.classList.add('has-yt');
-      c.style.setProperty('--thumb', `url(https://i.ytimg.com/vi/${encodeURIComponent(it.youtube)}/hqdefault.jpg)`);
+      const thumb = it.format === 'short' ? 'oar2' : 'maxresdefault'; // oar2 is YouTube's full-size vertical thumbnail
+      c.style.setProperty('--thumb', `url(https://i.ytimg.com/vi/${encodeURIComponent(it.youtube)}/${thumb}.jpg)`);
     }
     v.addEventListener('loadedmetadata', () => {
       // Orientation comes from the file itself; content.json "format" is only the fallback.
@@ -119,17 +120,18 @@ export class Carousel {
     });
   }
 
-  // YouTube clips: players exist only near the active card; further ones show the thumbnail.
+  // YouTube clips: the active card and its neighbours keep a playing player; further ones show the thumbnail.
   playYouTube(c, it, d, active, soundOn) {
     let f = c.querySelector('iframe');
     if (d > 1) { f?.remove(); this.hideYouTube(c); return; }
     const send = () => {
       if (!f.isConnected) return;
       f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: it.id }), YT_ORIGIN);
-      const cmd = (func) => f.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT_ORIGIN);
-      cmd(c.ytSound ? 'unMute' : 'mute');
-      cmd(c.ytActive ? 'playVideo' : 'pauseVideo');
+      cmd(c.ytActive && c.ytSound ? 'unMute' : 'mute');
+      cmd('playVideo');
     };
+    // no seeking back to the start here: any seek brings YouTube's controls back up
+    const cmd = (func) => f.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT_ORIGIN);
     c.ytActive = active; c.ytSound = soundOn;
     if (f) { send(); return; }
 

@@ -95,7 +95,7 @@ video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cov
 .has-yt .scene, .has-yt .hook { display: none; }
 /* scaled past the card edges so a 16:9 or 9:16 player fills the phone with no black bars */
 .card iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; transform: scale(1.2); opacity: 0; transition: opacity .25s; }
-.card.active.yt-playing iframe { opacity: 1; } /* otherwise the thumbnail shows, never YouTube's own UI */
+.card.active.yt-ready iframe { opacity: 1; } /* otherwise the thumbnail shows, never YouTube's own UI */
 
 .ui { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 5.5cqw; }
 .hook { display: flex; flex-direction: column; align-items: center; gap: .25em; text-align: center; font-weight: 700;
