@@ -12,13 +12,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&display=swap">
   <link rel="preload" as="image" href="/bg.jpg">
+  <script>
+    // Decided before first paint so returning visitors never see the entrance flash.
+    try {
+      const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!sessionStorage.arrived && !reduce && location.hash !== '#about') document.documentElement.classList.add('intro');
+      sessionStorage.arrived = 1;
+    } catch {}
+  </script>
 </head>
 <body>
   <main class="app" id="app">
     <section class="stage boot" id="stage" aria-label="Selected work">
       <div class="world" aria-hidden="true">
-        <img class="layer sky" src="/bg.jpg" alt="" width="2500" height="848" fetchpriority="high">
-        <img class="layer ground" src="/bg.jpg" alt="" width="2500" height="848">
+        <div class="lens">
+          <img class="layer sky" src="/bg.jpg" alt="" width="2500" height="848" fetchpriority="high">
+          <img class="layer ground" src="/bg.jpg" alt="" width="2500" height="848">
+        </div>
       </div>
       <canvas id="dust" aria-hidden="true"></canvas>
       <div class="spot">
@@ -32,6 +42,7 @@
         </div>
       </div>
       <div class="shade" aria-hidden="true"></div>
+      <div class="intro-name" aria-hidden="true">ofir elboym</div>
       <section class="about-area" id="about-area" aria-label="About" inert>
         <h1>ofir elboym</h1>
         <p>singer-songwriter</p>

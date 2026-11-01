@@ -14,7 +14,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
-body { background: #EAD8C8; color: var(--ink); font-family: var(--font); font-size: 15px; overflow: hidden; -webkit-font-smoothing: antialiased; }
+body { background: linear-gradient(#BFE6E0, #FBE7BC 60%, #F2BBAA); color: var(--ink); font-family: var(--font); font-size: 15px; overflow: hidden; -webkit-font-smoothing: antialiased; }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 1.5px solid currentColor; outline-offset: 4px; }
@@ -24,6 +24,22 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------- scene ---------- */
 .world { position: absolute; inset: 0; animation: breathe 24s ease-in-out infinite alternate; transform-origin: 50% 68%; }
+/* ---------- entrance: starts close on the sky, tilts down to the plinth ---------- */
+.lens { position: absolute; inset: 0; transform-origin: 34% 0; }
+.intro .lens { transform: scale(2.05); }
+.arriving .lens { transition: transform 1.9s cubic-bezier(.6, 0, .15, 1); }
+.intro-name { position: absolute; inset: 0; z-index: 9; display: grid; place-items: center; pointer-events: none; opacity: 0;
+  font-size: clamp(34px, 5vw, 64px); font-weight: 700; letter-spacing: -.02em; transition: opacity .45s; }
+.intro .intro-name { opacity: 1; animation: name-in .6s ease-out; }
+@keyframes name-in { from { opacity: 0; transform: translateY(8px); } }
+/* The phone appears where it stands as the camera arrives; the clips then fan out from behind it. */
+.intro .spot { transform: scale(.97); opacity: 0; }
+.arriving .spot { transition: transform 1.2s cubic-bezier(.2, .8, .2, 1) .9s, opacity .8s .9s; }
+.intro .card:not(.active) { transform: translate(-50%, -50%) scale(.5) !important; opacity: 0 !important; }
+.arriving .card:not(.active) { transition-delay: 1.3s; }
+.intro .shade, .intro .masthead, .intro .bottom { opacity: 0; }
+.arriving .shade, .arriving .masthead, .arriving .bottom { transition: opacity .8s 1.3s; }
+
 /* One panorama split at the horizon: the ground moves with the camera, the far sky more slowly. */
 .layer { position: absolute; left: var(--ox); top: var(--oy); width: var(--iw); height: var(--ih); max-width: none; display: block;
   transition: transform var(--camera); will-change: transform; }

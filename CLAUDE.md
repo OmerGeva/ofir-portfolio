@@ -19,6 +19,7 @@ and "she owns the whole process and gets results" within 30.
 - `src/scene.js`: **plinth anchoring** (see below) and phone sizing
 - `src/input.js`: wheel (one clip per gesture), swipe, arrow keys, mouse tilt
 - `src/dust.js`: canvas dust motes
+- Entrance: first visit per tab only, decided by the inline script in `index.html`, finished at the end of `src/main.js`, styled under `.intro`/`.arriving`. The phone fades in where it stands; nothing drops in
 - `src/content.json`: **all content lives here**
 - `public/bg.jpg`: panorama background (2500×848, its first 500px are a mirrored extension), used twice as the sky and ground layers. `public/videos/`: put clips here to start
 

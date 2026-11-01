@@ -75,3 +75,14 @@ resize(); render(); setView();
 // the first layout must land in place, not animate in from the cards' unset transforms
 void stage.offsetWidth;
 stage.classList.remove('boot');
+
+// Entrance: hold on the sky until the scene has loaded (never past 2.5s), then tilt down to the plinth.
+const root = document.documentElement;
+if (root.classList.contains('intro')) {
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const loaded = document.querySelector('.ground').decode().catch(() => {});
+  Promise.race([Promise.all([loaded, wait(800)]), wait(2500)]).then(() => {
+    root.classList.replace('intro', 'arriving');
+    setTimeout(() => root.classList.remove('arriving'), 2600);
+  });
+}

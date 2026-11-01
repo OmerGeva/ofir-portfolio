@@ -1,5 +1,5 @@
 const YT_ORIGIN = 'https://www.youtube-nocookie.com';
-const YT_CONTROLS_MS = 4000; // how long YouTube keeps its controls up after playback starts
+const YT_CONTROLS_S = 4; // how long YouTube keeps its controls up each time a clip starts or loops
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Side-card look by distance from the active card: scale, Y-rotation (deg), opacity
@@ -14,25 +14,19 @@ export class Carousel {
     this.onSelect = onSelect;
     this.onMeta = onMeta;
     this.cards = items.map(it => this.makeCard(it));
-    // A YouTube player is ready to show once it has played long enough for its controls to fade.
+    // A YouTube player shows only once this play-through is past its controls, so loops are covered too.
     // Neighbours pre-roll hidden, so swapping to one is instant and YouTube's UI never appears.
     window.addEventListener('message', e => {
       if (e.origin !== YT_ORIGIN) return;
-      let state;
-      try { state = JSON.parse(e.data)?.info?.playerState; } catch { return; }
-      if (state == null) return;
+      let info;
+      try { info = JSON.parse(e.data)?.info; } catch { return; }
+      if (!info) return;
       const c = this.cards.find(c => c.querySelector('iframe')?.contentWindow === e.source);
       if (!c) return;
-      if (state !== 1 && state !== 3) this.hideYouTube(c);
-      else if (!c.ytReveal && !c.classList.contains('yt-ready')) {
-        c.ytReveal = setTimeout(() => { c.classList.add('yt-ready'); c.ytReveal = null; }, YT_CONTROLS_MS);
-      }
+      if (info.playerState != null) c.ytPlaying = info.playerState === 1 || info.playerState === 3;
+      if (info.currentTime != null) c.ytTime = info.currentTime;
+      c.classList.toggle('yt-ready', !!c.ytPlaying && c.ytTime >= YT_CONTROLS_S);
     });
-  }
-
-  hideYouTube(c) {
-    clearTimeout(c.ytReveal); c.ytReveal = null;
-    c.classList.remove('yt-ready');
   }
 
   makeCard(it) {
@@ -123,7 +117,7 @@ export class Carousel {
   // YouTube clips: the active card and its neighbours keep a playing player; further ones show the thumbnail.
   playYouTube(c, it, d, active, soundOn) {
     let f = c.querySelector('iframe');
-    if (d > 1) { f?.remove(); this.hideYouTube(c); return; }
+    if (d > 1) { f?.remove(); c.ytTime = 0; c.classList.remove('yt-ready'); return; }
     const send = () => {
       if (!f.isConnected) return;
       f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: it.id }), YT_ORIGIN);
