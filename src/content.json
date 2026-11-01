@@ -1,0 +1,30 @@
+{
+  "name": "ofir elboym",
+  "handle": "@yourhandle",
+  "items": [
+    { "id": "pov-site", "brand": "Wix", "title": "POV: you built a site before your coffee cooled", "platform": "Reels", "format": "short",
+      "role": "concept, script, on-camera, edit", "views": "1.2M", "src": null, "poster": null,
+      "hook": ["POV:", "you built a site", "before your coffee cooled"], "caption": "site in 10 min challenge", "palette": ["#F2B45C", "#E9806A", "#FFE6B8"] },
+    { "id": "site-mistakes", "brand": "Wix", "title": "3 website mistakes I see every day", "platform": "TikTok", "format": "short",
+      "role": "hooks, scripting, edit", "views": "840K", "src": null, "poster": null,
+      "hook": ["Stop doing this", "on your website"], "caption": "save this before your next launch", "palette": ["#9C86C9", "#E7A3C0", "#D7F0F4"] },
+    { "id": "week-inside", "brand": "Wix", "title": "A week as a creator inside a tech company", "platform": "YouTube", "format": "long",
+      "role": "producer, host, editor", "views": "210K", "src": null, "poster": null,
+      "hook": ["A week inside", "a tech company"], "caption": "creator diaries, ep. 04", "palette": ["#5E8D9C", "#D99A8E", "#F6E2C9"] },
+    { "id": "shelf-reset", "brand": "Brand collab", "title": "The 60-second shelf reset", "platform": "Reels", "format": "short",
+      "role": "concept, styling, shoot, edit", "views": "430K", "src": null, "poster": null,
+      "hook": ["60 seconds.", "One shelf.", "Zero chaos."], "caption": "reset with me", "palette": ["#EBC7CF", "#B9A2D6", "#FFF4E6"] },
+    { "id": "cafe-crawl", "brand": "Personal", "title": "Rating 5 cafés in one morning", "platform": "TikTok", "format": "short",
+      "role": "series format, voiceover, edit", "views": "1.9M", "src": null, "poster": null,
+      "hook": ["I rated 5 cafés", "so you don't have to"], "caption": "part 3 of the café series", "palette": ["#E0913F", "#C7607A", "#FFD99A"] },
+    { "id": "founder", "brand": "Wix", "title": "Founder interview: building in public", "platform": "YouTube", "format": "long",
+      "role": "interview prep, direction, edit", "views": "95K", "src": null, "poster": null,
+      "hook": ["Building", "in public"], "caption": "founder series", "palette": ["#3F6672", "#A9D6DE", "#E9F7F8"] },
+    { "id": "launch-checklist", "brand": "Wix", "title": "Trend remix: the launch-day checklist", "platform": "Reels", "format": "short",
+      "role": "trend adaptation, on-camera, edit", "views": "670K", "src": null, "poster": null,
+      "hook": ["Launch day", "checklist"], "caption": "tag someone launching this week", "palette": ["#D9B3BC", "#E9806A", "#FFFFFF"] },
+    { "id": "bts", "brand": "Behind the scenes", "title": "How a 15-second video takes 4 hours", "platform": "Shorts", "format": "short",
+      "role": "storyboard, edit", "views": "310K", "src": null, "poster": null,
+      "hook": ["15 seconds", "= 4 hours"], "caption": "the part nobody sees", "palette": ["#8E7FB8", "#F2B45C", "#FCE3D2"] }
+  ]
+}
