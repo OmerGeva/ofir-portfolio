@@ -11,7 +11,7 @@ const items = content.items;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const pad = n => String(n).padStart(2, '0');
 
-let cur = 0, soundOn = false, G = null;
+let cur = 0, soundOn = false, G = null, inAbout = false;
 
 const carousel = new Carousel(
   { float: $('float'), tilt: $('tilt'), phone: $('phone'), bezel: $('bezel'), shadow: $('pshadow') },
@@ -20,7 +20,20 @@ const carousel = new Carousel(
 );
 
 function layout() { if (G) carousel.layout(G, cur); }
-function resize() { G = geom(stage); layout(); }
+function resize() {
+  G = geom(stage);
+  for (const k of ['iw', 'ih', 'ox', 'oy', 'shift']) stage.style.setProperty('--' + k, G[k] + 'px');
+  layout();
+}
+const playCurrent = () => carousel.play(cur, soundOn && !inAbout);
+
+// The camera moves along the panorama in CSS; #about selects which spot it rests on.
+function setView() {
+  inAbout = location.hash === '#about';
+  $('app').classList.toggle('about', inAbout);
+  $('about-area').inert = !inAbout;
+  playCurrent();
+}
 
 function render() {
   const it = items[cur];
@@ -37,7 +50,7 @@ function render() {
 
 function go(n) {
   cur = (n + items.length) % items.length;
-  layout(); render(); carousel.play(cur, soundOn);
+  layout(); render(); playCurrent();
 }
 
 $('nums').innerHTML = items.map((it, k) =>
@@ -48,14 +61,16 @@ $('sound').addEventListener('click', () => {
   soundOn = !soundOn;
   $('sound').setAttribute('aria-pressed', soundOn);
   $('sound').textContent = soundOn ? 'sound on' : 'sound off';
-  carousel.play(cur, soundOn);
+  playCurrent();
 });
 
-bindInput(stage, $('tilt'), { next: () => go(cur + 1), prev: () => go(cur - 1) }, reduceMotion);
+const step = n => { if (!inAbout) go(cur + n); };
+bindInput(stage, $('tilt'), { next: () => step(1), prev: () => step(-1) }, reduceMotion);
 startDust($('dust'), stage, reduceMotion);
 new ResizeObserver(resize).observe(stage);
+addEventListener('hashchange', setView);
 
-resize(); render(); carousel.play(cur, soundOn);
+resize(); render(); setView();
 
 // the first layout must land in place, not animate in from the cards' unset transforms
 void stage.offsetWidth;

@@ -9,6 +9,7 @@
   --gutter: max(24px, env(safe-area-inset-left, 0px));
   --gutter-r: max(24px, env(safe-area-inset-right, 0px));
   --ease-swap: cubic-bezier(.65, 0, .25, 1);
+  --camera: 1.7s cubic-bezier(.7, 0, .25, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -19,11 +20,21 @@ a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 1.5px solid currentColor; outline-offset: 4px; }
 
 .app { position: relative; height: 100svh; min-height: 560px; }
-.stage { position: absolute; inset: 0; overflow: hidden; perspective: 1400px; touch-action: pan-y; }
+.stage { position: absolute; inset: 0; overflow: hidden; touch-action: pan-y; }
 
 /* ---------- scene ---------- */
-.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; display: block;
-  animation: breathe 24s ease-in-out infinite alternate; transform-origin: 50% 68%; }
+.world { position: absolute; inset: 0; animation: breathe 24s ease-in-out infinite alternate; transform-origin: 50% 68%; }
+/* One panorama split at the horizon: the ground moves with the camera, the far sky more slowly. */
+.layer { position: absolute; left: var(--ox); top: var(--oy); width: var(--iw); height: var(--ih); max-width: none; display: block;
+  transition: transform var(--camera); will-change: transform; }
+.sky { clip-path: inset(0 0 50.3% 0); }
+.ground { clip-path: inset(49.6% 0 0 0); }
+.about .ground { transform: translateX(var(--shift)); }
+.about .sky { transform: translateX(calc(var(--shift) * .72)); }
+
+/* Everything standing on the plinth travels with the ground. */
+.spot { position: absolute; inset: 0; z-index: 3; perspective: 1400px; transition: transform var(--camera), opacity .7s 1s; }
+.about .spot { transform: translateX(var(--shift)); opacity: 0; pointer-events: none; transition: transform var(--camera), opacity .6s .35s; }
 @keyframes breathe { to { transform: scale(1.035); } }
 
 .word { position: absolute; left: 0; right: 0; top: 14%; z-index: 1; text-align: center; pointer-events: none; white-space: nowrap;
@@ -36,9 +47,21 @@ a { color: inherit; text-decoration: none; }
   animation: shadow 6s ease-in-out infinite alternate; }
 @keyframes shadow { to { transform: translate(-50%, -50%) scale(.82); opacity: .7; } }
 
-#dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
+#dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; }
 .shade { position: absolute; left: 0; right: 0; bottom: 0; height: 30%; z-index: 7; pointer-events: none;
-  background: linear-gradient(to top, rgba(30, 16, 24, .58), rgba(30, 16, 24, 0)); }
+  background: linear-gradient(to top, rgba(30, 16, 24, .58), rgba(30, 16, 24, 0)); transition: opacity .8s; }
+.about .shade { opacity: 0; }
+
+/* ---------- about area: stands further along the ground, arrives with the camera ---------- */
+.about-area { position: absolute; left: max(var(--gutter), 8vw); top: 21%; z-index: 8; max-width: 38ch; color: var(--ink);
+  transform: translateX(calc(-1 * var(--shift))); visibility: hidden;
+  transition: transform var(--camera), visibility 0s linear 1.7s; }
+.about .about-area { transform: none; visibility: visible; transition: transform var(--camera), visibility 0s; }
+.about-area h1 { margin: 0 0 6px; font-size: 34px; font-weight: 700; letter-spacing: -.01em; }
+.about-area p { margin: 0 0 18px; font-size: 17px; line-height: 1.45; }
+.about-area ul { display: flex; gap: 22px; margin: 0; padding: 0; list-style: none; font-size: 14px; }
+.about-area a { border-bottom: 1px solid currentColor; }
+.about-area a:hover { opacity: .6; }
 
 /* ---------- phone ---------- */
 .tilt { position: absolute; width: 0; height: 0; z-index: 4;
@@ -113,9 +136,12 @@ video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cov
 .links { margin-left: auto; display: flex; gap: 22px; }
 .links a, .links button { color: var(--ink); transition: opacity .2s; }
 .links a:hover, .links button:hover { opacity: .6; }
+.links .to-work, .about .links .to-about, .about #sound { display: none; }
+.about .links .to-work { display: inline; }
 #sound[aria-pressed="true"] { color: var(--accent); }
 
-.bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+.about .bottom { opacity: 0; pointer-events: none; }
+.bottom { position: absolute; left: 0; right: 0; bottom: 0; z-index: 10; display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; transition: opacity .5s;
   padding: 0 var(--gutter-r) max(22px, env(safe-area-inset-bottom, 0px)) var(--gutter); color: var(--on-shade); }
 .caption { margin: 0; max-width: 46ch; display: flex; flex-direction: column; gap: 3px; font-size: 14px; line-height: 1.35; transition: opacity .25s; }
 .c-brand { font-weight: 700; }
@@ -131,6 +157,7 @@ video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cov
   .bottom { flex-direction: column; align-items: flex-start; gap: 14px; }
   .c-title { font-size: 17px; }
   .nums { gap: 12px; flex-wrap: wrap; }
+  .about-area { left: var(--gutter); right: var(--gutter-r); top: 13%; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
