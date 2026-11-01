@@ -40,11 +40,16 @@ a { color: inherit; text-decoration: none; }
 .intro .shade, .intro .masthead, .intro .bottom { opacity: 0; }
 .arriving .shade, .arriving .masthead, .arriving .bottom { transition: opacity .8s 1.3s; }
 
-/* One panorama split at the horizon: the ground moves with the camera, the far sky more slowly. */
-.layer { position: absolute; left: var(--ox); top: var(--oy); width: var(--iw); height: var(--ih); max-width: none; display: block;
+/* One panorama split at the horizon: the ground moves with the camera, the far sky more slowly.
+   The strips are fixed windows and only the image slides, so Safari can composite it directly;
+   clipping the image itself makes iPhones redraw the whole scene during the move. */
+.strip { position: absolute; left: 0; right: 0; overflow: hidden; }
+.sky-strip { top: 0; height: calc(var(--hy) + 1px); }
+.ground-strip { top: var(--hy); bottom: 0; }
+.layer { position: absolute; left: var(--ox); width: var(--iw); height: var(--ih); max-width: none; display: block;
   transition: transform var(--camera); will-change: transform; }
-.sky { clip-path: inset(0 0 50.3% 0); }
-.ground { clip-path: inset(49.6% 0 0 0); }
+.sky { top: var(--oy); }
+.ground { top: calc(var(--oy) - var(--hy)); }
 .about .ground { transform: translateX(var(--shift)); }
 .about .sky { transform: translateX(calc(var(--shift) * .72)); }
 
@@ -174,6 +179,7 @@ video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cov
   .c-title { font-size: 17px; }
   .nums { gap: 12px; flex-wrap: wrap; }
   .about-area { left: var(--gutter); right: var(--gutter-r); top: 13%; }
+  .world { animation: none; } /* scaling this whole layer is too heavy for phones */
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }

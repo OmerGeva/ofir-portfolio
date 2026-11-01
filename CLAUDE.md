@@ -32,7 +32,7 @@ Each item: `brand, title, platform, format ("short" | "long"), role, views, src,
 ## Plinth anchoring
 The phone must always stand on the plinth in `bg.jpg`, at every viewport size.
 `scene.js` holds the plinth's top-surface centre and half-width **in source-image pixels** (`BG`), fits the panorama to the screen,
-and sizes and places the phone from that. `BG.aboutX` is what the camera frames at `#about`. The horizon split lives in `.sky`/`.ground` in CSS.
+and sizes and places the phone from that. `BG.aboutX` is what the camera frames at `#about`. `BG.horizonY` is where the scene splits into the `.sky-strip` and `.ground-strip` windows. Only the images inside them move: don't put `clip-path` on them, it makes iPhones redraw the scene.
 **If the background image changes:** open it in any image viewer, read off the plinth's top-surface centre (x, y) and half-width
 in pixels, update `BG`. For a mobile background (9:16), use `<picture>`/`srcset` plus a second `BG` config picked by aspect ratio.
 

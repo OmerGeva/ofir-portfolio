@@ -7,6 +7,7 @@ export const BG = {
   plinthX: 1059,   // centre of the plinth's top surface
   plinthY: 570,
   plinthHalfW: 221,
+  horizonY: 421,
   aboutX: 2140    // the bench, which the camera frames in the about area
 };
 
@@ -21,6 +22,7 @@ export function geom(stage) {
   const pan = x => Math.min(0, Math.max(w - iw, x));
   const ox = pan(w / 2 - BG.plinthX * s);
   const oy = (h - ih) * BG.posY;
+  const hy = oy + BG.horizonY * s;
   const shift = pan(w * (w < 700 ? 0.5 : 0.68) - BG.aboutX * s) - ox;
   const plinthX = ox + BG.plinthX * s;
   const plinthY = oy + BG.plinthY * s;
@@ -31,5 +33,5 @@ export function geom(stage) {
   const cap = w < 700 ? w * 0.52 : w * 0.3;
   if (pw > cap) { pw = cap; ph = pw / PHONE_RATIO; }
 
-  return { w, h, pw, ph, plinthX, plinthY, plinthW, iw, ih, ox, oy, shift };
+  return { w, h, pw, ph, plinthX, plinthY, plinthW, iw, ih, ox, oy, hy, shift };
 }

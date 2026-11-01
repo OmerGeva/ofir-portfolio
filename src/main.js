@@ -22,7 +22,7 @@ const carousel = new Carousel(
 function layout() { if (G) carousel.layout(G, cur); }
 function resize() {
   G = geom(stage);
-  for (const k of ['iw', 'ih', 'ox', 'oy', 'shift']) stage.style.setProperty('--' + k, G[k] + 'px');
+  for (const k of ['iw', 'ih', 'ox', 'oy', 'hy', 'shift']) stage.style.setProperty('--' + k, G[k] + 'px');
   layout();
 }
 const playCurrent = () => carousel.play(cur, soundOn && !inAbout);
@@ -68,7 +68,15 @@ const step = n => { if (!inAbout) go(cur + n); };
 bindInput(stage, $('tilt'), { next: () => step(1), prev: () => step(-1) }, reduceMotion);
 startDust($('dust'), stage, reduceMotion);
 new ResizeObserver(resize).observe(stage);
-addEventListener('hashchange', setView);
+// In-page links change the view without a navigation, which Safari on iPhone shows as a reload.
+document.addEventListener('click', e => {
+  const link = e.target.closest('a[href^="#"]');
+  if (!link) return;
+  e.preventDefault();
+  history.pushState(null, '', link.getAttribute('href'));
+  setView();
+});
+addEventListener('popstate', setView);
 
 resize(); render(); setView();
 
