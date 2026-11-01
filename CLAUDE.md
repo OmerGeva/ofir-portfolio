@@ -1,7 +1,7 @@
 # Portfolio site: content creator (short & long-form social video)
 
 A one-screen portfolio for a social media content creator (ex-Wix; Reels, TikTok, YouTube). The whole site is one idea:
-**a phone floats over a concrete plinth in a dreamy seaside wildflower scene, and her videos orbit it and fly into its screen.**
+**a phone floats over a concrete plinth in a dreamy seaside meadow scene, and her videos orbit it and fly into its screen.**
 Long-form (landscape) videos rotate the phone to landscape.
 
 Audience: hiring managers and creative leads at brands and agencies. They should get "she makes great short-form video" in 3 seconds,
@@ -20,10 +20,10 @@ and "she owns the whole process and gets results" within 30.
 - `src/input.js`: wheel (one clip per gesture), swipe, arrow keys, mouse tilt
 - `src/dust.js`: canvas dust motes
 - `src/content.json`: **all content lives here**
-- `public/bg.jpg`: background (2400×1792). `public/videos/`: put clips here to start
+- `public/bg.jpg`: background (2000×1493). `public/videos/`: put clips here to start
 
 ## Content model (`src/content.json`)
-Each item: `brand, title, platform, format ("short" | "long"), role, views, src, poster, hook[], caption, palette[3]`.
+Each item: `brand, title, platform, format ("short" | "long"), role, views, src, youtube, poster, hook[], palette[3]`.
 - `src: null` renders a placeholder clip (gradient + hook text). Set `src` to a video URL to use the real file.
 - Orientation is detected from the video file and overrides `format`.
 - Placeholder titles and stats are made up. Replace them all with her real work before launch.

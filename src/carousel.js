@@ -1,9 +1,5 @@
-const ICONS = {
-  heart: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C.8 8.2 3 4.5 6.6 4.5c2.1 0 3.5 1.1 4.4 2.5.9-1.4 2.3-2.5 4.4-2.5 3.6 0 5.8 3.7 4.2 7.3C19.5 16.4 12 21 12 21z"/></svg>',
-  chat: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.4 1.2 4.6 3.2 6.1L4.5 21l4-1.9c1.1.3 2.3.4 3.5.4 5.5 0 10-3.8 10-8.5S17.5 3 12 3z"/></svg>',
-  send: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.5 11.2 21 3l-6.6 18.5-3.4-7.6-8.5-2.7z"/></svg>',
-  status: '<svg viewBox="0 0 34 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/><rect x="22" y="1" width="11" height="10" rx="3"/></svg>'
-};
+const YT_ORIGIN = 'https://www.youtube-nocookie.com';
+const YT_CONTROLS_MS = 4000; // how long YouTube keeps its controls up after playback starts
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 // Side-card look by distance from the active card: scale, Y-rotation (deg), opacity
@@ -12,13 +8,31 @@ const ROT = [0, 26, 36, 44];
 const OPACITY = [1, 0.95, 0.6, 0];
 
 export class Carousel {
-  constructor(refs, items, handle, { onSelect, onMeta }) {
+  constructor(refs, items, { onSelect, onMeta }) {
     Object.assign(this, refs);
     this.items = items;
-    this.handle = handle;
     this.onSelect = onSelect;
     this.onMeta = onMeta;
     this.cards = items.map(it => this.makeCard(it));
+    // Reveal a YouTube player only once it has played long enough for its controls to fade,
+    // and hide it again on pause or end, so none of YouTube's own UI ever shows.
+    window.addEventListener('message', e => {
+      if (e.origin !== YT_ORIGIN) return;
+      let state;
+      try { state = JSON.parse(e.data)?.info?.playerState; } catch { return; }
+      if (state == null) return;
+      const c = this.cards.find(c => c.querySelector('iframe')?.contentWindow === e.source);
+      if (!c) return;
+      if (state !== 1 && state !== 3) this.hideYouTube(c);
+      else if (!c.ytReveal && !c.classList.contains('yt-playing')) {
+        c.ytReveal = setTimeout(() => { c.classList.add('yt-playing'); c.ytReveal = null; }, YT_CONTROLS_MS);
+      }
+    });
+  }
+
+  hideYouTube(c) {
+    clearTimeout(c.ytReveal); c.ytReveal = null;
+    c.classList.remove('yt-playing');
   }
 
   makeCard(it) {
@@ -29,22 +43,18 @@ export class Carousel {
     c.innerHTML = `
       <div class="scene"><span class="blob b1"></span><span class="blob b2"></span></div>
       <video playsinline loop muted preload="none"></video>
-      <div class="ui">
-        <div><div class="status"><span>9:41</span>${ICONS.status}</div>
-          <div class="top"><span class="plat">${esc(it.platform)}</span><span>${esc(this.handle)}</span></div></div>
-        <div class="hook">${(it.hook || []).map(h => `<span>${esc(h)}</span>`).join('')}</div>
-        <div class="rail"><div>${ICONS.heart}</div><div>${ICONS.chat}</div><div>${ICONS.send}</div></div>
-        <div><div class="cap"><b>${esc(this.handle)}</b>${esc(it.caption)}</div><div class="bar"><i></i></div></div>
-      </div>`;
+      <div class="ui"><div class="hook">${(it.hook || []).map(h => `<span>${esc(h)}</span>`).join('')}</div></div>`;
     c.addEventListener('click', () => this.onSelect(this.cards.indexOf(c)));
 
-    const v = c.querySelector('video'), bar = c.querySelector('.bar i');
+    const v = c.querySelector('video');
     if (it.src) {
       v.src = it.src;
       if (it.poster) v.poster = it.poster;
       c.classList.add('has-video');
+    } else if (it.youtube) {
+      c.classList.add('has-yt');
+      c.style.setProperty('--thumb', `url(https://i.ytimg.com/vi/${encodeURIComponent(it.youtube)}/hqdefault.jpg)`);
     }
-    v.addEventListener('timeupdate', () => { if (v.duration) bar.style.width = (v.currentTime / v.duration * 100) + '%'; });
     v.addEventListener('loadedmetadata', () => {
       // Orientation comes from the file itself; content.json "format" is only the fallback.
       const long = v.videoWidth > v.videoHeight;
@@ -100,11 +110,37 @@ export class Carousel {
     const n = this.cards.length;
     this.cards.forEach((c, k) => {
       const v = c.querySelector('video');
-      if (!v.getAttribute('src')) return;
       const d = Math.min(Math.abs(k - cur), n - Math.abs(k - cur));
+      if (this.items[k].youtube && !this.items[k].src) return this.playYouTube(c, this.items[k], d, k === cur, soundOn);
+      if (!v.getAttribute('src')) return;
       if (d <= 1 && v.preload !== 'auto') v.preload = 'auto';
       if (k === cur) { v.muted = !soundOn; v.play().catch(() => {}); }
       else v.pause();
     });
+  }
+
+  // YouTube clips: players exist only near the active card; further ones show the thumbnail.
+  playYouTube(c, it, d, active, soundOn) {
+    let f = c.querySelector('iframe');
+    if (d > 1) { f?.remove(); this.hideYouTube(c); return; }
+    const send = () => {
+      if (!f.isConnected) return;
+      f.contentWindow.postMessage(JSON.stringify({ event: 'listening', id: it.id }), YT_ORIGIN);
+      const cmd = (func) => f.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args: [] }), YT_ORIGIN);
+      cmd(c.ytSound ? 'unMute' : 'mute');
+      cmd(c.ytActive ? 'playVideo' : 'pauseVideo');
+    };
+    c.ytActive = active; c.ytSound = soundOn;
+    if (f) { send(); return; }
+
+    const id = encodeURIComponent(it.youtube);
+    f = document.createElement('iframe');
+    f.src = `${YT_ORIGIN}/embed/${id}?enablejsapi=1&mute=1&controls=0&loop=1&playlist=${id}&playsinline=1&rel=0&origin=${encodeURIComponent(location.origin)}`;
+    f.title = it.title;
+    f.allow = 'autoplay; encrypted-media';
+    f.tabIndex = -1;
+    // the player ignores commands sent before it has finished booting
+    f.addEventListener('load', () => [0, 600, 1500].forEach(ms => setTimeout(send, ms)));
+    c.insertBefore(f, c.querySelector('.ui'));
   }
 }

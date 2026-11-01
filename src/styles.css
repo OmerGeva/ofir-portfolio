@@ -91,29 +91,18 @@ a { color: inherit; text-decoration: none; }
 video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; background: #000; }
 .has-video video { display: block; }
 .has-video .scene, .has-video .hook { display: none; }
+.has-yt { background: #000 var(--thumb) center / cover no-repeat; }
+.has-yt .scene, .has-yt .hook { display: none; }
+/* scaled past the card edges so a 16:9 or 9:16 player fills the phone with no black bars */
+.card iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; transform: scale(1.2); opacity: 0; transition: opacity .25s; }
+.card.active.yt-playing iframe { opacity: 1; } /* otherwise the thumbnail shows, never YouTube's own UI */
 
-.ui { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 4cqmin 5.5cqw 5cqw;
-  background: linear-gradient(180deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, 0) 22%, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, .45)); }
-.status { display: none; justify-content: space-between; align-items: center; height: 9cqw; padding: 0 4cqw; font-size: max(9px, 4cqw); font-weight: 600; }
-.card.active:not(.landscape-card) .status { display: flex; }
-.status svg { height: 1em; width: auto; }
-.top { display: flex; justify-content: space-between; align-items: center; margin-top: 2cqw; font-size: max(9px, 4cqw); font-weight: 600; }
-.plat { padding: .3em .75em; border-radius: 999px; background: rgba(255, 255, 255, .24); backdrop-filter: blur(6px); }
+.ui { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 5.5cqw; }
 .hook { display: flex; flex-direction: column; align-items: center; gap: .25em; text-align: center; font-weight: 700;
   font-size: max(10px, 7.4cqmin); line-height: 1.05; letter-spacing: -.01em; }
 .hook span { background: #fff; color: #18141A; padding: .12em .36em; border-radius: .25em; }
 .hook span:first-child { background: var(--accent); color: #fff; }
 .landscape-card .hook { font-size: max(10px, 9cqmin); }
-.rail { position: absolute; right: 4.5cqw; bottom: 24%; display: flex; flex-direction: column; gap: 4.5cqw; }
-.rail svg { width: max(14px, 8cqw); height: max(14px, 8cqw); display: block; }
-.landscape-card .rail { display: none; }
-.cap { max-width: 78%; margin-bottom: 3cqw; font-size: max(9px, 4cqw); font-weight: 500; line-height: 1.3; }
-.landscape-card .cap { font-size: max(9px, 2.6cqw); }
-.cap b { display: block; font-weight: 700; }
-.bar { height: 3px; background: rgba(255, 255, 255, .3); border-radius: 2px; overflow: hidden; }
-.bar i { display: block; height: 100%; width: 0; background: #fff; }
-.card.active:not(.has-video) .bar i { animation: prog 9s linear infinite; }
-@keyframes prog { to { width: 100%; } }
 
 /* ---------- UI: plain type on the scene ---------- */
 .masthead { position: absolute; left: 0; right: 0; top: 0; z-index: 10; display: flex; align-items: baseline; gap: 18px; flex-wrap: wrap;

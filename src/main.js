@@ -15,7 +15,7 @@ let cur = 0, soundOn = false, G = null;
 
 const carousel = new Carousel(
   { float: $('float'), tilt: $('tilt'), phone: $('phone'), bezel: $('bezel'), shadow: $('pshadow') },
-  items, content.handle,
+  items,
   { onSelect: k => { if (k !== cur) go(k); }, onMeta: () => { layout(); render(); } }
 );
 
@@ -26,7 +26,7 @@ function render() {
   const it = items[cur];
   $('caption').innerHTML =
     `<span class="c-brand">${it.brand}</span><span class="c-title">${it.title}</span>` +
-    `<span class="c-meta">${it.platform} · ${it.role} · ${it.views} views</span>`;
+    `<span class="c-meta">${[it.platform, it.role, it.views && `${it.views} views`].filter(Boolean).join(' · ')}</span>`;
   const w = $('word'), word = it.format === 'long' ? 'long form' : it.platform.toLowerCase();
   if (w.textContent !== word) {
     w.classList.add('out');
