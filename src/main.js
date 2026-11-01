@@ -56,3 +56,7 @@ startDust($('dust'), stage, reduceMotion);
 new ResizeObserver(resize).observe(stage);
 
 resize(); render(); carousel.play(cur, soundOn);
+
+// the first layout must land in place, not animate in from the cards' unset transforms
+void stage.offsetWidth;
+stage.classList.remove('boot');

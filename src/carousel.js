@@ -56,18 +56,14 @@ export class Carousel {
 
   layout(g, cur) {
     const it = this.items[cur], isLong = it.format === 'long';
-    const B = Math.max(7, g.pw * 0.034); // bezel thickness, including the metal rim
     let phW = isLong ? g.ph : g.pw, phH = isLong ? g.pw : g.ph;
     if (isLong && phW > g.w * 0.9) { const k = g.w * 0.9 / phW; phW *= k; phH *= k; }
-    const rad = Math.min(phW, phH) * 0.15;
+    const U = Math.max(phW, phH) / 80, B = U * 1.25, rad = U * 6.666; // 1em of phone, bezel thickness, corner
 
     for (const el of [this.phone, this.bezel]) {
       el.style.width = phW + 'px'; el.style.height = phH + 'px'; el.style.borderRadius = rad + 'px';
       el.classList.toggle('landscape', isLong);
-      el.style.setProperty('--rim', Math.max(2, g.pw * 0.01) + 'px');
-      el.style.setProperty('--iw', g.pw * 0.26 + 'px');
-      el.style.setProperty('--ih', g.pw * 0.075 + 'px');
-      el.style.setProperty('--it', B + g.pw * 0.02 + 'px');
+      el.style.fontSize = U + 'px';
     }
     // keep the phone's bottom edge hovering just above the plinth
     this.tilt.style.left = g.plinthX + 'px';

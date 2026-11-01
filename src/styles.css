@@ -46,28 +46,34 @@ a { color: inherit; text-decoration: none; }
 .float { position: absolute; inset: 0; animation: bob 6s ease-in-out infinite alternate; }
 @keyframes bob { to { transform: translateY(-12px); } }
 
-/* --rim, --iw, --ih and --it are set from carousel.js so the hardware scales with the phone */
-.phone { position: absolute; left: 0; top: 0; z-index: 3; transform: translate(-50%, -50%); box-sizing: border-box;
-  border: var(--rim) solid transparent;
-  background: linear-gradient(var(--phone), var(--phone)) padding-box,
-    linear-gradient(135deg, #D5D6D8 0%, #84878D 22%, #B4B6BA 50%, #6F7278 78%, #BEC0C4 100%) border-box;
-  box-shadow: 0 0 0 .5px rgba(30, 30, 35, .55), 0 50px 70px -35px rgba(40, 20, 40, .55);
+.boot, .boot * { transition: none !important; }
+
+/* Hardware adapted from Luke Meyrick's iPhone 14 pen (codepen.io/lukemeyrick/pen/poVyEdZ).
+   Sizes are in em: carousel.js sets font-size so the phone's long side is always 80em. */
+.phone { position: absolute; left: 0; top: 0; z-index: 3; transform: translate(-50%, -50%); background: #000;
+  box-shadow: 0 0 .1em .25em hsl(215, 6%, 24%), 0 0 0 .4em hsl(215, 6%, 76%), 0 50px 70px -35px rgba(40, 20, 40, .55);
   transition: width .7s var(--ease-swap), height .7s var(--ease-swap), border-radius .7s; }
-.phone i { position: absolute; width: 2.5px; background: linear-gradient(90deg, #6F7278, #A5A7AC); transition: opacity .3s; }
-.phone .b1, .phone .b2, .phone .b3 { left: calc(-1 * var(--rim) - 2.5px); border-radius: 2px 0 0 2px; }
-.phone .b4 { right: calc(-1 * var(--rim) - 2.5px); border-radius: 0 2px 2px 0; transform: scaleX(-1); }
-.phone .b1 { top: 17%; height: 4%; }
-.phone .b2 { top: 25%; height: 8%; }
-.phone .b3 { top: 35%; height: 8%; }
-.phone .b4 { top: 28%; height: 13%; }
+.phone::before { content: ""; position: absolute; top: 6.666em; right: -.4em; bottom: 6.666em; left: -.4em;
+  border: solid hsl(215, 6%, 42%); border-width: .3em 0; }
+.phone.landscape::before { top: -.4em; right: 6.666em; bottom: -.4em; left: 6.666em; border-width: 0 .3em; }
+.phone i { position: absolute; left: -.733em; width: .333em; height: 6em; background: hsl(215, 6%, 86%); transition: opacity .3s;
+  border-radius: .2em 0 0 .2em;
+  box-shadow: inset -.15em 0 .1em #000, inset 0 .2em .1em hsl(215, 6%, 72%), inset 0 -.2em .1em hsl(215, 6%, 72%); }
+.phone .b1 { top: 12.93em; height: 3em; }
+.phone .b2 { top: 17.93em; }
+.phone .b3 { top: 25.43em; }
+.phone .b4 { left: auto; right: -.733em; top: 19.6em; height: 9.5em; transform: scaleX(-1); }
 .phone.landscape i { opacity: 0; }
 
-.bezel { position: absolute; left: 0; top: 0; z-index: 5; transform: translate(-50%, -50%); pointer-events: none;
+.bezel { position: absolute; left: 0; top: 0; z-index: 5; transform: translate(-50%, -50%); pointer-events: none; border: 1.25em solid #000;
   transition: width .7s var(--ease-swap), height .7s var(--ease-swap), border-radius .7s; }
-.island { position: absolute; left: 50%; top: var(--it); width: var(--iw); height: var(--ih); transform: translateX(-50%);
+.island { position: absolute; left: 50%; top: 1.25em; width: 12em; height: 3.33em; transform: translateX(-50%);
   background: #000; border-radius: 999px; transition: all .7s var(--ease-swap); }
-.landscape .island { left: var(--it); top: 50%; width: var(--ih); height: var(--iw); transform: translateY(-50%); }
-.glare { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(118deg, rgba(255, 255, 255, .09) 0%, rgba(255, 255, 255, 0) 30%); }
+.island::after { content: ""; position: absolute; right: 1.1em; top: 50%; width: 1.1em; height: 1.1em; margin-top: -.55em; border-radius: 50%;
+  box-shadow: inset 0 0 .25em #4C4DA3; background: radial-gradient(#6667AC, transparent 50%) no-repeat 33.3% 10% / 75% 50%, radial-gradient(#454680, transparent 50%) no-repeat 60% 85% / 50% 50%, #080928; }
+.landscape .island { left: 1.25em; top: 50%; width: 3.33em; height: 12em; transform: translateY(-50%); }
+.landscape .island::after { right: 50%; top: 1.1em; margin: 0 -.55em 0 0; }
+.glare { position: absolute; inset: 0; border-radius: 5.416em; background: linear-gradient(118deg, rgba(255, 255, 255, .09) 0%, rgba(255, 255, 255, 0) 30%); }
 
 /* ---------- cards (clips) ---------- */
 .card { position: absolute; left: 0; top: 0; overflow: hidden; border-radius: 22px; background: #333; color: #fff;

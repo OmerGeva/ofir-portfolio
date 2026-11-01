@@ -10,7 +10,7 @@ export const BG = {
   plinthHalfW: 628
 };
 
-const PHONE_RATIO = 0.485; // width / height of a modern iPhone
+const PHONE_RATIO = 37 / 76; // width / height of a modern iPhone
 
 // Maps the plinth from image space to screen space (object-fit: cover math)
 // and sizes the phone so it stands on it with room for the header above.
